@@ -26,7 +26,7 @@ sudo swtpm socket --tpmstate dir="$TPM" --tpm2 --ctrl type=unixio,path="$TPM"/sw
 sleep 2 # this should be changed to a netstat query
 
 sudo kvm \
-  -smp 2 -m 256 -netdev user,id=mynet0,hostfwd=tcp::8022-:22,hostfwd=tcp::8090-:80 \
+  -smp 2 -m 512 -netdev user,id=mynet0,hostfwd=tcp::8022-:22,hostfwd=tcp::8090-:80 \
   -device virtio-net-pci,netdev=mynet0 \
   -pflash /usr/share/OVMF/OVMF_CODE.fd \
   -drive file=OVMF_VARS.fd,if=pflash,format=raw \

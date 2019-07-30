@@ -28,6 +28,7 @@ export PYTHONPATH=./ubuntu-image
     -f bin:go/unlock \
     -f lib:no-udev.so \
     -f bin:chooser/chooser \
+    -f bin:check-trigger/check-trigger \
     -f lib:/usr/lib/x86_64-linux-gnu/libform.so.5 \
     -f lib:/usr/lib/x86_64-linux-gnu/libmenu.so.5 \
     -f lib:/lib/x86_64-linux-gnu/libncurses.so.5 \
