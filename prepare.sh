@@ -9,10 +9,14 @@ build_udev_hack() {
 
 build_chooser() {
     sudo apt install libncursesw5-dev libncurses5-dev
-    go get github.com/gbin/goncurses
+    go get github.com/rthornton128/goncurses
     (cd chooser &&
      go build chooser.go
     )
+}
+
+build_check_trigger() {
+    make -C check-trigger
 }
 
 get_ubuntu_image() {
@@ -125,6 +129,10 @@ snap download --channel=20/edge pc
 
 if [ ! -x chooser/chooser ]; then
     build_chooser
+fi
+
+if [ ! -x check-trigger/check-trigger ]; then
+    build_check_trigger
 fi
 
 if [ ! -f no-udev.so ]; then
