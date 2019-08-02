@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os/exec"
 	"path"
 	"time"
 
@@ -113,42 +112,29 @@ func main() {
 	output := flag.String("output", "/run/chooser.out", "Output file location")
 	seed := flag.String("seed", "/run/ubuntu-seed", "Ubuntu-seed location")
 	timeout := flag.Int("timeout", 5, "Timeout in seconds")
-	check := flag.Bool("check", false, "Check if magic trigger is active")
 	flag.Parse()
-
-	// Wait for trigger to run the chooser
-	if *check && !checkTrigger() {
-		return
-	}
 
 	c := &Chooser{}
 	c.Init()
 	defer c.Deinit()
 
-	if !*check {
-		chooseSystem(c, *title, *seed, *output, *timeout)
-		return
-	}
+	chooseSystem(c, *title, *seed, *output, *timeout)
 
-	mainMenu := []MenuOption{
-		{"Run", runHandler},
-		{"Recover", recoverHandler},
-		{"Reset", resetHandler},
-		{"Advanced", advancedHandler},
-	}
+	/*
+		mainMenu := []MenuOption{
+			{"Run", runHandler},
+			{"Recover", recoverHandler},
+			{"Reset", resetHandler},
+			{"Advanced", advancedHandler},
+		}
 
-	opt, err := c.DisplayMenu("Choose mode", 0, mainMenu)
-	if err != nil {
-		c.Deinit()
-		log.Fatalf("internal error: %s", err)
-	}
-	mainMenu[opt].handler(c, *seed, *output)
-}
-
-func checkTrigger() bool {
-	fmt.Println("Checking recovery trigger...")
-	time.Sleep(2 * time.Second)
-	return exec.Command("/bin/check-trigger").Run() == nil
+		opt, err := c.DisplayMenu("Choose mode", 0, mainMenu)
+		if err != nil {
+			c.Deinit()
+			log.Fatalf("internal error: %s", err)
+		}
+		mainMenu[opt].handler(c, *seed, *output)
+	*/
 }
 
 func runHandler(c *Chooser, parms ...interface{}) {
