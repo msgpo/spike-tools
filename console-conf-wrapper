@@ -16,6 +16,9 @@ for x in $(cat /proc/cmdline); do
     esac
 done
 
+if [ -f /writable/system-data/.recover ]; then
+    snap_mode="recovery"
+fi
 
 if [ -f /writable/system-data/chooser.out ]; then
     . /writable/system-data/chooser.out
