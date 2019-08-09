@@ -7,24 +7,21 @@ trap echo_on EXIT
 
 for x in $(cat /proc/cmdline); do
     case $x in
-        snap_mode=*)
-            snap_mode=${x#*=}
-            ;;
-        snap_recovery_system=*)
-            snap_recovery_system=${x#*=}
+        snap_recovery_mode=*)
+            snap_recovery_mode=${x#*=}
             ;;
     esac
 done
 
 if [ -f /writable/system-data/.recover ]; then
-    snap_mode="recovery"
+    snap_recovery_mode="recover"
 fi
 
 if [ -f /writable/system-data/chooser.out ]; then
     . /writable/system-data/chooser.out
 fi
 
-if [ "$snap_mode" = "install" ]; then
+if [ "$snap_recovery_mode" = "install" ]; then
     if [ "$(tty)" = "/dev/tty1" ]; then
         snap recover --install "$uc_recovery_system"
         echo "Installing system, please wait..."
@@ -33,8 +30,10 @@ if [ "$snap_mode" = "install" ]; then
     else
         cat
     fi
-elif [ "$snap_mode" = "recover" ]; then
+elif [ "$snap_recovery_mode" = "recover" ]; then
     if [ "$(tty)" = "/dev/tty1" ]; then
+        udevadm trigger /dev/dm-0
+        sleep 1
         snap recover "$uc_recovery_system"
         echo "Running system recovery, please wait..."
         echo
