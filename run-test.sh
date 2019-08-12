@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TPM=tpm
+TPM="/var/snap/swtpm-mvo/current/"
 
 usage() {
     echo "Usage: $0 [-c]"
@@ -10,7 +10,7 @@ usage() {
 while getopts "hc" opt; do
     case "${opt}" in
         c)
-            rm -f "$TPM"/*
+            sudo rm -f "$TPM"/tpm2-00.permall
             ;;
         *)
             usage
@@ -19,8 +19,6 @@ while getopts "hc" opt; do
 done
 shift $((OPTIND-1))
 
-
-TPM="/var/snap/swtpm-mvo/current/"
 
 sudo kvm \
   -smp 2 -m 512 -netdev user,id=mynet0,hostfwd=tcp::8022-:22,hostfwd=tcp::8090-:80 \
