@@ -59,8 +59,11 @@ get_fde_utils() {
     mkdir -p "$DST"
     if [ ! -d "$DST/unlock" ]; then
         git clone -b "$BRANCH" "$REPO" "$DST"
+        (cd "$DST" && go get -v -d ./...)
     fi
-    (cd "$DST"/vendor && govendor sync)
+    if [ -f "$DST"/vendor/vendor.json ]; then
+        (cd "$DST" && govendor sync)
+    fi
 
     go build -o go/unlock github.com/chrisccoulson/ubuntu-core-fde-utils/unlock
 }
