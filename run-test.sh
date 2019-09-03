@@ -22,6 +22,7 @@ shift $((OPTIND-1))
 
 sudo kvm \
   -smp 2 -m 512 -netdev user,id=mynet0,hostfwd=tcp::8022-:22,hostfwd=tcp::8090-:80 \
+  -object rng-random,filename=/dev/hwrng,id=rng0 -device virtio-rng-pci,rng=rng0 \
   -device virtio-net-pci,netdev=mynet0 \
   -pflash /usr/share/OVMF/OVMF_CODE.fd \
   -drive file=OVMF_VARS.fd,if=pflash,format=raw \
