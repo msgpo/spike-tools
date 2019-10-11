@@ -47,6 +47,35 @@ get_snapd_uc20() {
     go build -o go/snapd github.com/snapcore/snapd/cmd/snapd
 }
 
+get_shim_uc20() {
+    sudo apt install gnu-efi
+
+    REPO="https://github.com/cmatsuoka/shim.git"
+    BRANCH="uc20"
+
+    if [ ! -d shim ]; then
+        git clone -b "$BRANCH" "$REPO"
+    fi
+
+    make -C shim \
+        RELEASE=15 \
+        MAKELEVEL=0 \
+        EFI_PATH=/usr/lib \
+        ENABLE_HTTPBOOT=true \
+        ENABLE_SHIM_CERT=1 \
+        ENABLE_SBSIGN=1 \
+        VENDOR_CERT_FILE=../canonical-uefi-ca.der
+        EFIDIR=ubuntu
+
+    (cd shim;
+    sbsign \
+        --key ../sb-test-cc/TestUefiCA.key \
+        --cert ../sb-test-cc/TestUefiCA.crt.pem \
+        --output shimx64.efi.signed \
+        shimx64.efi
+    )
+}
+
 get_fde_utils() {
     REPO="https://github.com/chrisccoulson/ubuntu-core-fde-utils"
     BRANCH="master"
@@ -85,6 +114,9 @@ generate_keys() {
      openssl req -new -x509 -newkey rsa:2048 -keyout TestUEFI.key -out TestUEFI.crt \
         -outform DER -days 3650 -passout pass:1234 -subj "/CN=Test UEFI Signing Key"
 
+     # Copy Chris Coulson's UEFI test certificate
+     cp ../sb-test-cc/TestUefiCA.crt .
+
      # Download Microsoft’s UEFI CA certificate
      wget --content-disposition https://go.microsoft.com/fwlink/p/?linkid=321194
 
@@ -120,6 +152,14 @@ if [ ! -x ./go/snap ]; then
     get_snapd_uc20
 fi
 
+if [ ! -f sbtestdb/drive.img ]; then
+    generate_keys
+fi
+
+if [ ! -x ./shim/shimx64.efi.signed ]; then
+    get_shim_uc20
+fi
+
 if [ ! -x ./go/unlock ]; then
     get_fde_utils
 fi
@@ -146,6 +186,3 @@ if [ ! -f no-udev.so ]; then
     build_udev_hack
 fi
 
-if [ ! -f sbtestdb/drive.img ]; then
-    generate_keys
-fi
