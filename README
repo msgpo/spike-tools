@@ -1,16 +1,20 @@
 
+Requirements:
+
+- Eoan ovmf package installed
+- Eoan-based core20
+- Eoan kernel preferred
+
+
 To run the spike:
 
-./prepare.sh
-./build-image.sh
-./run-test.sh
+1. Run ./prepare.sh. The test key passphrase to sign shim is 1234.
 
-Secure boot keys must be manually enrolled in OVMF.
+2. Enroll PK, KEK, and DB certificates (Microsoft CA, TestUEFI, TestUefiCA)
+   in the OVMF UI and restart.
 
+3. Run ./build-image.sh
 
-If you're hacking snapd:
-
-./build-snapd.sh
-./build-image.sh
-./run-test.sh
+4. Run ./run-test.sh (-c to clear the TPM state). If execution stops type
+   something to generate entropy for the RNG.
 

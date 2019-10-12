@@ -54,6 +54,7 @@ sudo ./inject-snap.sh \
 #skip mtools warning
 export MTOOLS_SKIP_CHECK=1
 
+echo "Generate image..."
 UBUNTU_IMAGE_SNAP_CMD=$(pwd)/go/snap \
     ubuntu-image/ubuntu-image snap \
     --image-size 4G \
@@ -62,5 +63,19 @@ UBUNTU_IMAGE_SNAP_CMD=$(pwd)/go/snap \
     --snap snapd_*.snap \
     --snap core20_*.snap \
     core20-mvo-amd64.model
+
+echo "Install shim..."
+MNT=img_mountpoint
+mkdir -p "$MNT"
+sudo mount -oloop,offset=1202M pc.img img_mountpoint
+sudo cp shim/shimx64.efi.signed "$MNT"/EFI/boot/bootx64.efi
+sudo cp shim/fbx64.efi.signed "$MNT"/EFI/boot/fbx64.efi
+sudo cp shim/mmx64.efi.signed "$MNT"/EFI/boot/mmx64.efi
+sudo cp shim/shimx64.efi.signed "$MNT"/EFI/ubuntu/shimx64.efi
+sudo cp shim/fbx64.efi.signed "$MNT"/EFI/ubuntu/fbx64.efi
+sudo cp shim/mmx64.efi.signed "$MNT"/EFI/ubuntu/mmx64.efi
+sudo cp BOOTX64.CSV "$MNT"/EFI/ubuntu
+sudo umount "$MNT"
+
 
 echo "Run with: ./run-test.sh"
